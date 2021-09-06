@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration>
+	<Properties>
+        <Property name="patternLayout">%d{yyyy-MM-dd HH:mm:ss a} %-5level [%t] %logger{36}.%M : %msg%n</Property>
+        <Property name="logPath">D:\logs\ms</Property>
+    </Properties>
+    <Appenders>
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{yyyy-MMM-dd HH:mm:ss a} %highlight{%-5level} [%15.15t] %style{%40C{1.}.%-20M}{cyan} : %msg%n"/>
+        </Console>
+        <RollingFile name="FileInfo" filePattern="${logPath}/$${date:yyyy-MMM}/%d{dd}/info.%i.log">
+            <PatternLayout pattern="${patternLayout}"/>
+            <LevelRangeFilter minLevel="INFO" maxLevel="INFO" onMatch="ACCEPT" onMismatch="DENY"/>
+            <Policies>
+            	<OnStartupTriggeringPolicy/>
+            	<SizeBasedTriggeringPolicy size="10 MB"/>
+            	<TimeBasedTriggeringPolicy interval="1" modulate="false"/>
+            </Policies>
+        </RollingFile>
+        <RollingFile name="FileWarn" filePattern="${logPath}/$${date:yyyy-MMM}/%d{dd}/warn.%i.log">
+            <PatternLayout pattern="${patternLayout}"/>
+            <LevelRangeFilter minLevel="WARN" maxLevel="WARN" onMatch="ACCEPT" onMismatch="DENY"/>
+            <Policies>
+            	<OnStartupTriggeringPolicy/>
+            	<SizeBasedTriggeringPolicy size="10 MB"/>
+            	<TimeBasedTriggeringPolicy interval="1" modulate="false"/>
+            </Policies>
+        </RollingFile>
+        <RollingFile name="FileError" filePattern="${logPath}/$${date:yyyy-MMM}/%d{dd}/error.%i.log">
+            <PatternLayout pattern="${patternLayout}"/>
+            <LevelRangeFilter minLevel="ERROR" maxLevel="ERROR" onMatch="ACCEPT" onMismatch="DENY"/>
+            <Policies>
+            	<OnStartupTriggeringPolicy/>
+            	<SizeBasedTriggeringPolicy size="10 MB"/>
+            	<TimeBasedTriggeringPolicy interval="1" modulate="false"/>
+            </Policies>
+        </RollingFile>
+	</Appenders>
+
+	<Loggers>
+		<Root level="info">
+			<AppenderRef ref="Console" />
+			<AppenderRef ref="FileInfo" />
+			<AppenderRef ref="FileWarn" />
+			<AppenderRef ref="FileError" />
+		</Root>
+	</Loggers>
+</Configuration>
