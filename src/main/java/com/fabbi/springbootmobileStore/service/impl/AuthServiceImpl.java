@@ -65,7 +65,7 @@ public class AuthServiceImpl implements AuthService {
 		} catch (Exception e) {
 			log.error("Cannot login because username or password is incorrect");
 			throw new LogicErrorException(Constants.USER_PROP_USERNAME_PASSWORD, Constants.LOGIN_FAIL,
-					Constants.LOGIN_FAIL);
+					"username.password.incorrect.error");
 		}
 
 		SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -91,7 +91,7 @@ public class AuthServiceImpl implements AuthService {
 		if (userRepository.existsByUsername(request.getUsername())) {
 			log.error("Cannot insert because username is already taken");
 			throw new LogicErrorException(Constants.USER_PROP_USERNAME, Constants.USERNAME_EXIST_ERROR,
-					Constants.REGISTER_FAIL);
+					"username.isexisted.error");
 		}
 
 		UserEntity user = new UserEntity(request.getUsername(), passwordEncoder.encode(request.getPassword()));
@@ -101,7 +101,7 @@ public class AuthServiceImpl implements AuthService {
 		if (strRoles == null) {
 			RoleEntity userRole = roleRepository.findByName(ERole.ROLE_USER)
 					.orElseThrow(() -> new LogicErrorException(Constants.USER_PROP_ROLE, Constants.ROLE_NOT_EXIST_ERROR,
-							Constants.REGISTER_FAIL));
+							"role.not.exist.error"));
 			roles.add(userRole);
 		} else {
 			strRoles.forEach(role -> {
@@ -109,13 +109,13 @@ public class AuthServiceImpl implements AuthService {
 				case "admin":
 					RoleEntity adminRole = roleRepository.findByName(ERole.ROLE_ADMIN)
 							.orElseThrow(() -> new LogicErrorException(Constants.USER_PROP_ROLE,
-									Constants.ROLE_NOT_EXIST_ERROR, Constants.REGISTER_FAIL));
+									Constants.ROLE_NOT_EXIST_ERROR, "role.not.exist.error"));
 					roles.add(adminRole);
 					break;
 				default:
 					RoleEntity userRole = roleRepository.findByName(ERole.ROLE_USER)
 							.orElseThrow(() -> new LogicErrorException(Constants.USER_PROP_ROLE,
-									Constants.ROLE_NOT_EXIST_ERROR, Constants.REGISTER_FAIL));
+									Constants.ROLE_NOT_EXIST_ERROR, "role.not.exist.error"));
 					roles.add(userRole);
 				}
 			});

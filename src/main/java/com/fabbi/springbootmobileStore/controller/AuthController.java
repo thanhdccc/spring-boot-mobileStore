@@ -34,6 +34,6 @@ public class AuthController {
 	@RequestMapping(value = Constants.AUTH_API_SIGNUP, method = RequestMethod.POST)
 	public ResponseEntity<ResultBean> registerUser(@Valid @RequestBody SignupDTO signupRequest) {
 		ResultBean resultBean = authService.register(signupRequest);
-		return new ResponseEntity<>(resultBean, HttpStatus.OK);
+		return new ResponseEntity<>(resultBean, HttpStatus.CREATED);
 	}
 }

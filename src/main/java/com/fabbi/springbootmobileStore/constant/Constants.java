@@ -41,7 +41,7 @@ public final class Constants {
 	/**
 	 * ******* Category *******
 	 */
-	public static final String CATEGORY_PATH = "/category";
+	public static final String CATEGORY_PATH = "/categories";
 	public static final String CATEGORY_PROP_ID = "id";
 	public static final String CATEGORY_PROP_NAME = "name";
 	public static final String CATEGORY_EXIST_ERROR = "Category name is already taken";
@@ -53,7 +53,7 @@ public final class Constants {
 	/**
 	 * ******* Product *******
 	 */
-	public static final String PRODUCT_PATH = "/product";
+	public static final String PRODUCT_PATH = "/products";
 	public static final String PRODUCT_PROP_ID = "id";
 	public static final String PRODUCT_PROP_NAME = "name";
 	public static final String PRODUCT_PROP_QUANTITY = "quantity";
@@ -68,10 +68,8 @@ public final class Constants {
 	/**
 	 * ******* Order *******
 	 */
-	public static final String ORDER_PATH = "/order";
-	public static final String ORDER_DETAIL_PATH = "/detail";
-	public static final String ORDER_DETAIL_ID_PATH = "/{itemId}";
-	public static final String ORDER_DETAIL_ID = "itemId";
+	public static final String ORDER_PATH = "/orders";
+	public static final String ORDER_USER_PATH = "/user-orders";
 	public static final String ORDER_PROP_ID = "id";
 	public static final String ORDER_PROP_ID_DETAIL = "orderId";
 	public static final String ORDER_PROP_ORDER_AND_PRODUCT_ID = "orderId and productId";

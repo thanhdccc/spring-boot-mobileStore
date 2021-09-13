@@ -7,7 +7,7 @@ public interface CategoryService {
 
 	ResultBean insertCategory(CategoryDTO request);
 	
-	ResultBean updateCategory(CategoryDTO request);
+	ResultBean updateCategory(Integer id, CategoryDTO request);
 	
 	ResultBean getCategoryById(Integer id);
 	

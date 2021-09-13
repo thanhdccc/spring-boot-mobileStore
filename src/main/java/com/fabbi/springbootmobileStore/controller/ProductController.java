@@ -31,13 +31,14 @@ public class ProductController {
 	@PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity<ResultBean> createProduct(@Valid @RequestBody ProductDTO request) {
 		ResultBean resultBean = productService.insertProduct(request);
-		return new ResponseEntity<>(resultBean, HttpStatus.OK);
+		return new ResponseEntity<>(resultBean, HttpStatus.CREATED);
 	}
 
-	@RequestMapping(value = "", method = RequestMethod.PUT, produces = { MediaType.APPLICATION_JSON_VALUE })
+	@RequestMapping(value = "/{id}", method = RequestMethod.PUT, produces = { MediaType.APPLICATION_JSON_VALUE })
 	@PreAuthorize("hasRole('ADMIN')")
-	public ResponseEntity<ResultBean> updateProduct(@Valid @RequestBody ProductDTO request) {
-		ResultBean resultBean = productService.updateProduct(request);
+	public ResponseEntity<ResultBean> updateProduct(@Valid @RequestBody ProductDTO request,
+			@PathVariable(Constants.PRODUCT_PROP_ID) Integer id) {
+		ResultBean resultBean = productService.updateProduct(id, request);
 		return new ResponseEntity<>(resultBean, HttpStatus.OK);
 	}
 

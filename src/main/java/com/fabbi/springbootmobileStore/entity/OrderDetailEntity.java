@@ -1,16 +1,11 @@
 package com.fabbi.springbootmobileStore.entity;
 
-import java.io.Serializable;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.ForeignKey;
 import javax.persistence.Table;
 
 import lombok.Getter;
@@ -20,16 +15,12 @@ import lombok.Setter;
 @Table(name = "orderdetail")
 @Getter
 @Setter
-public class OrderDetailEntity implements Serializable {
+public class OrderDetailEntity extends BaseEntity {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -1784209730203146933L;
-	
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Integer id;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "order_id", nullable = false, foreignKey = @ForeignKey(name = "ORDER_DETAIL_ORD_FK"))

@@ -6,6 +6,7 @@ import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Version;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -33,4 +34,7 @@ public class ProductEntity extends BaseEntity {
 	@ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
 	private CategoryEntity category;
+	
+	@Version
+	private Long version;
 }

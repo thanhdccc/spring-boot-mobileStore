@@ -7,7 +7,7 @@ public interface ProductService {
 
 	ResultBean insertProduct(ProductDTO request);
 
-	ResultBean updateProduct(ProductDTO request);
+	ResultBean updateProduct(Integer id, ProductDTO request);
 
 	ResultBean getProductById(Integer id);
 

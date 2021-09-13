@@ -31,13 +31,14 @@ public class CategoryController {
 	@PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity<ResultBean> createCategory(@Valid @RequestBody CategoryDTO request) {
 		ResultBean resultBean = categoryService.insertCategory(request);
-		return new ResponseEntity<>(resultBean, HttpStatus.OK);
+		return new ResponseEntity<>(resultBean, HttpStatus.CREATED);
 	}
 
-	@RequestMapping(value = "", method = RequestMethod.PUT, produces = { MediaType.APPLICATION_JSON_VALUE })
+	@RequestMapping(value = "/{id}", method = RequestMethod.PUT, produces = { MediaType.APPLICATION_JSON_VALUE })
 	@PreAuthorize("hasRole('ADMIN')")
-	public ResponseEntity<ResultBean> updateCategory(@Valid @RequestBody CategoryDTO request) {
-		ResultBean resultBean = categoryService.updateCategory(request);
+	public ResponseEntity<ResultBean> updateCategory(@Valid @RequestBody CategoryDTO request,
+			@PathVariable(Constants.CATEGORY_PROP_ID) Integer id) {
+		ResultBean resultBean = categoryService.updateCategory(id, request);
 		return new ResponseEntity<>(resultBean, HttpStatus.OK);
 	}
 

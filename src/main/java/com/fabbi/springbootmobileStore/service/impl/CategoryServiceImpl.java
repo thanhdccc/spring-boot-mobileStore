@@ -44,12 +44,12 @@ public class CategoryServiceImpl implements CategoryService {
 				categoryRepository.save(categoryEntity);
 			} catch (Exception e) {
 				log.error("Error to insert category");
-				throw new LogicErrorException(e.getMessage(), Constants.CREATE_FAIL);
+				throw new LogicErrorException(e.getMessage(), "category.insert.error");
 			}
 		} else {
 			log.error("Cannot insert category because the name is existed");
 			throw new LogicErrorException(Constants.CATEGORY_PROP_NAME, Constants.CATEGORY_EXIST_ERROR,
-					Constants.CREATE_FAIL);
+					"category.name.isexisted.error");
 		}
 
 		resultBean.setMessage(Constants.CREATE_SUCCESS);
@@ -60,9 +60,8 @@ public class CategoryServiceImpl implements CategoryService {
 	}
 
 	@Override
-	public ResultBean updateCategory(CategoryDTO request) {
+	public ResultBean updateCategory(Integer id, CategoryDTO request) {
 		resultBean = new ResultBean();
-		Integer id = request.getId();
 		String name = request.getName();
 		log.info("######## Begin update category ########");
 
@@ -71,29 +70,30 @@ public class CategoryServiceImpl implements CategoryService {
 		if (id == null) {
 			log.error("Cannot update category because category id is not exist");
 			throw new LogicErrorException(Constants.CATEGORY_PROP_ID, Constants.CATEGORY_ID_NULL_ERROR,
-					Constants.UPDATE_FAIL);
+					"category.id.null.error");
 		} else {
 			CategoryEntity categoryEntity = categoryRepository.findOneById(id);
 
 			if (categoryEntity == null) {
 				log.error("Cannot update category because category is not exist");
 				throw new LogicErrorException(Constants.CATEGORY_PROP_ID, Constants.CATEGORY_NOT_EXIST_ERROR,
-						Constants.UPDATE_FAIL);
+						"category.notexist.error");
 			}
 
-			if (categoryRepository.getCategoryByName(name, id) != null) {
+			if (categoryRepository.existsByNameAndIdNot(name, id)) {
 				log.error("Cannot update category because there is exist category with same name");
 				throw new LogicErrorException(Constants.CATEGORY_PROP_NAME, Constants.CATEGORY_EXIST_ERROR,
-						Constants.UPDATE_FAIL);
+						"category.name.exist.error");
 			}
 
 			categoryEntity = ObjectMapperUtils.map(request, CategoryEntity.class);
+			categoryEntity.setId(id);
 			
 			try {
 				categoryRepository.save(categoryEntity);
 			} catch (Exception e) {
 				log.error("Error to update category");
-				throw new LogicErrorException(e.getMessage(), Constants.UPDATE_FAIL);
+				throw new LogicErrorException(e.getMessage(), "category.update.error");
 			}
 		}
 
@@ -116,7 +116,7 @@ public class CategoryServiceImpl implements CategoryService {
 			categoryEntity = categoryRepository.findOneById(id);
 		} catch (Exception e) {
 			log.error("Error to get category");
-			throw new LogicErrorException(e.getMessage(), Constants.GET_FAIL);
+			throw new LogicErrorException(e.getMessage(), "category.get.error");
 		}
 
 		if (categoryEntity != null) {
@@ -125,7 +125,7 @@ public class CategoryServiceImpl implements CategoryService {
 		} else {
 			log.error("Cannot get category with id: " + id);
 			throw new LogicErrorException(Constants.CATEGORY_PROP_ID, Constants.CATEGORY_NOT_EXIST_ERROR,
-					Constants.GET_FAIL);
+					"category.notexist.error");
 		}
 
 		resultBean.setMessage(Constants.GET_SUCCESS);
@@ -145,7 +145,7 @@ public class CategoryServiceImpl implements CategoryService {
 			categoryList = categoryRepository.findAll();
 		} catch (Exception e) {
 			log.error("Error to get category");
-			throw new LogicErrorException(e.getMessage(), Constants.GET_FAIL);
+			throw new LogicErrorException(e.getMessage(), "category.get.error");
 		}
 
 		List<CategoryDTO> categoryDtoList = ObjectMapperUtils.mapAll(categoryList, CategoryDTO.class);
@@ -170,7 +170,7 @@ public class CategoryServiceImpl implements CategoryService {
 			categoryEntity = categoryRepository.findOneById(id);
 		} catch (Exception e) {
 			log.error("Error to get category");
-			throw new LogicErrorException(e.getMessage(), Constants.GET_FAIL);
+			throw new LogicErrorException(e.getMessage(), "category.get.error");
 		}
 
 		if (categoryEntity != null) {		
@@ -179,19 +179,19 @@ public class CategoryServiceImpl implements CategoryService {
 			if (productEntity != null) {
 				log.error("Cannot delete category with id: " + id + " because there is product belong to");
 				throw new LogicErrorException(Constants.CATEGORY_PROP_ID, Constants.CATEGORY_PRODUCT_BELONG_ERROR,
-						Constants.DELETE_FAIL);
+						"product.belongto.category.error");
 			} else {
 				try {
 					categoryRepository.deleteById(id);
 				} catch (Exception e) {
 					log.error("Error to delete category");
-					throw new LogicErrorException(e.getMessage(), Constants.DELETE_FAIL);
+					throw new LogicErrorException(e.getMessage(), "category.delete.error");
 				}
 			}
 		} else {
 			log.error("Cannot delete category with id: " + id);
 			throw new LogicErrorException(Constants.CATEGORY_PROP_ID, Constants.CATEGORY_NOT_EXIST_ERROR,
-					Constants.DELETE_FAIL);
+					"category.notexist.error");
 		}
 
 		resultBean.setMessage(Constants.DELETE_SUCCESS);
@@ -206,7 +206,7 @@ public class CategoryServiceImpl implements CategoryService {
 		if (id <= 0 || id > Constants.MAX_VALUE_NUMBER) {
 			log.error("######## Error with limit category id ########");
 			throw new LogicErrorException(Constants.CATEGORY_PROP_ID, Constants.CATEGORY_ID_ERROR,
-					Constants.CATEGORY_ID_ERROR);
+					"category.id.out.range.error");
 		}
 	}
 }

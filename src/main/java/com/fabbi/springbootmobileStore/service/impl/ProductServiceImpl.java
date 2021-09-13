@@ -50,8 +50,8 @@ public class ProductServiceImpl implements ProductService {
 
 		if (categoryEntity == null) {
 			log.error("Cannot insert product because not exist category with id: " + categoryId);
-			throw new LogicErrorException(Constants.PRODUCT_PROP_CATEGORY, Constants.CATEGORY_EXIST_ERROR,
-					Constants.CREATE_FAIL);
+			throw new LogicErrorException(Constants.PRODUCT_PROP_NAME, Constants.CATEGORY_EXIST_ERROR,
+					"category.id.notexist.error");
 		}
 		
 		productEntity.setCategory(categoryEntity);
@@ -64,12 +64,12 @@ public class ProductServiceImpl implements ProductService {
 				productRepository.save(productEntity);
 			} catch (Exception e) {
 				log.error("Error to insert product");
-				throw new LogicErrorException(e.getMessage(), Constants.CREATE_FAIL);
+				throw new LogicErrorException(e.getMessage(), "product.insert.error");
 			}
 		} else {
 			log.error("Cannot insert product because the name and category are existed");
-			throw new LogicErrorException(Constants.PRODUCT_PROP_NAME + Constants.PRODUCT_PROP_CATEGORY,
-					Constants.PRODUCT_EXIST_ERROR, Constants.CREATE_FAIL);
+			throw new LogicErrorException(Constants.PRODUCT_PROP_NAME + " or " + Constants.PRODUCT_PROP_CATEGORY,
+					Constants.PRODUCT_EXIST_ERROR, "product.name.existed.error");
 		}
 
 		resultBean.setMessage(Constants.CREATE_SUCCESS);
@@ -80,9 +80,8 @@ public class ProductServiceImpl implements ProductService {
 	}
 
 	@Override
-	public ResultBean updateProduct(ProductDTO request) {
+	public ResultBean updateProduct(Integer id, ProductDTO request) {
 		resultBean = new ResultBean();
-		Integer id = request.getId();
 		String name = request.getName();
 		Integer quantity = request.getQuantity();
 		Float price = request.getPrice();
@@ -97,33 +96,42 @@ public class ProductServiceImpl implements ProductService {
 		if (id == null) {
 			log.error("Cannot update product because product id is not exist");
 			throw new LogicErrorException(Constants.PRODUCT_PROP_ID, Constants.PRODUCT_ID_NULL_ERROR,
-					Constants.UPDATE_FAIL);
+					"product.id.null.error");
 		} else {
-			ProductEntity productEntity = productRepository.findOneById(id);
-
-			if (productEntity == null) {
-				log.error("Cannot update product because product id is not exist");
-				throw new LogicErrorException(Constants.PRODUCT_PROP_ID, Constants.PRODUCT_NOT_EXIST_ERROR,
-						Constants.UPDATE_FAIL);
-			}
-
-			if (productRepository.getByNameAndCategoryAndId(name, categoryId, id) != null) {
-				log.error("Cannot update product because exist a product with same name and category");
-				throw new LogicErrorException(Constants.PRODUCT_PROP_NAME + Constants.PRODUCT_PROP_CATEGORY,
-						Constants.PRODUCT_EXIST_ERROR, Constants.UPDATE_FAIL);
-			}
-
-			productEntity = ObjectMapperUtils.map(request, ProductEntity.class);
-			CategoryEntity categoryEntity = categoryRepository.findOneById(categoryId);
-			productEntity.setCategory(categoryEntity);
-
 			try {
-				productRepository.save(productEntity);
-			} catch (Exception e) {
-				log.error("Error to update product");
-				throw new LogicErrorException(e.getMessage(), Constants.UPDATE_FAIL);
-			}
+				ProductEntity productEntity = productRepository.findOneById(id);
+				
 
+				if (productEntity == null) {
+					log.error("Cannot update product because product id is not exist");
+					throw new LogicErrorException(Constants.PRODUCT_PROP_ID, Constants.PRODUCT_NOT_EXIST_ERROR,
+							"product.notexist.error");
+				}
+
+				if (productRepository.existsByNameAndCategoryIdAndIdNot(name, categoryId, id)) {
+					log.error("Cannot update product because exist a product with same name and category");
+					throw new LogicErrorException(Constants.PRODUCT_PROP_NAME + " or " + Constants.PRODUCT_PROP_CATEGORY,
+							Constants.PRODUCT_EXIST_ERROR, "product.name.existed.error");
+				}
+
+				Long version = productEntity.getVersion();
+				productEntity = ObjectMapperUtils.map(request, ProductEntity.class);
+				CategoryEntity categoryEntity = categoryRepository.findOneById(categoryId);
+				productEntity.setCategory(categoryEntity);
+				productEntity.setVersion(version++);
+				productEntity.setId(id);
+
+				try {
+					productRepository.save(productEntity);
+				} catch (Exception e) {
+					log.error("Error to update product");
+					throw new LogicErrorException(e.getMessage(), "product.update.error");
+				}
+				
+			} catch (Exception e) {
+				log.warn("---- Product information had been changed...");
+				throw new LogicErrorException(e.getMessage(), "product.update.error");
+			}
 		}
 
 		resultBean.setMessage(Constants.UPDATE_SUCCESS);
@@ -145,7 +153,7 @@ public class ProductServiceImpl implements ProductService {
 			productEntity = productRepository.findOneById(id);
 		} catch (Exception e) {
 			log.error("Error to get product");
-			throw new LogicErrorException(e.getMessage(), Constants.GET_FAIL);
+			throw new LogicErrorException(e.getMessage(), "product.get.error");
 		}
 
 		if (productEntity != null) {
@@ -155,7 +163,7 @@ public class ProductServiceImpl implements ProductService {
 		} else {
 			log.error("Cannot get product with id: [" + id + "]");
 			throw new LogicErrorException(Constants.PRODUCT_PROP_ID, Constants.PRODUCT_NOT_EXIST_ERROR,
-					Constants.GET_FAIL);
+					"product.notexist.error");
 		}
 
 		resultBean.setMessage(Constants.GET_SUCCESS);
@@ -176,7 +184,7 @@ public class ProductServiceImpl implements ProductService {
 			productList = productRepository.findAll();
 		} catch (Exception e) {
 			log.error("Error to get product");
-			throw new LogicErrorException(e.getMessage(), Constants.GET_FAIL);
+			throw new LogicErrorException(e.getMessage(), "product.get.error");
 		}
 		for (ProductEntity item : productList) {
 			ProductDTO tmp = ObjectMapperUtils.map(item, ProductDTO.class);
@@ -204,7 +212,7 @@ public class ProductServiceImpl implements ProductService {
 			productEntity = productRepository.findOneById(id);
 		} catch (Exception e) {
 			log.error("Error to get product");
-			throw new LogicErrorException(e.getMessage(), Constants.GET_FAIL);
+			throw new LogicErrorException(e.getMessage(), "product.get.error");
 		}
 
 		if (productEntity != null) {
@@ -212,12 +220,12 @@ public class ProductServiceImpl implements ProductService {
 				productRepository.deleteById(id);
 			} catch (Exception e) {
 				log.error("Error to delete product");
-				throw new LogicErrorException(e.getMessage(), Constants.DELETE_FAIL);
+				throw new LogicErrorException(e.getMessage(), "product.delete.error");
 			}
 		} else {
 			log.error("Cannot get product with id: [" + id + "]");
 			throw new LogicErrorException(Constants.PRODUCT_PROP_ID, Constants.PRODUCT_NOT_EXIST_ERROR,
-					Constants.GET_FAIL);
+					"product.notexist.error");
 		}
 
 		resultBean.setMessage(Constants.DELETE_SUCCESS);
@@ -232,7 +240,7 @@ public class ProductServiceImpl implements ProductService {
 		if (quantity < 0 || quantity > Constants.MAX_VALUE_QUANTITY) {
 			log.error("######## Error with limit integer number ########");
 			throw new LogicErrorException(Constants.PRODUCT_PROP_QUANTITY, "Quantity is out of range",
-					"Integer number out of range");
+					"product.quantity.out.range.error");
 		}
 	}
 	
@@ -241,7 +249,7 @@ public class ProductServiceImpl implements ProductService {
 		if (price < 0 || price > Constants.MAX_VALUE_PRICE) {
 			log.error("######## Error with limit number ########");
 			throw new LogicErrorException(Constants.PRODUCT_PROP_QUANTITY, "Price is out of range",
-					"Number out of range");
+					"product.price.out.range.error");
 		}
 	}
 
@@ -250,7 +258,7 @@ public class ProductServiceImpl implements ProductService {
 		if (id <= 0 || id > Constants.MAX_VALUE_NUMBER) {
 			log.error("######## Error with limit integer number ########");
 			throw new LogicErrorException("Product id or Category id", "Product id or Category id is out of range",
-					"Integer number of range");
+					"id.out.range.error");
 		}
 	}
 }
